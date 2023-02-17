@@ -14,5 +14,6 @@
             "email": "ljingming473@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {}
 }
