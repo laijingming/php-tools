@@ -46,7 +46,7 @@ class Env
     protected function getFilePath($path, $file)
     {
         if (!is_string($path) || empty($path)) {
-            $path = __DIR__ . '/../WWW/';
+            $path = dirname(dirname(dirname(dirname(__DIR__)))) . '/';
         }
         if (!is_string($file)) {
             $file = '.env';
