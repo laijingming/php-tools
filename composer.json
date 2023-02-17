@@ -1,7 +1,8 @@
 {
     "name": "laijingming/tools",
     "description": "获取.env配置文件的环境变量",
-    "type": "library",
+    "type": "1",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "laijingming\\tools\\": "src/"
