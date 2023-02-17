@@ -6,7 +6,7 @@
  * Time: 15:29
  */
 
-namespace JimTools;
+namespace Ljm\Tools;
 
 class Env
 {
