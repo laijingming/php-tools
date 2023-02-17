@@ -6,7 +6,7 @@
  * Time: 15:29
  */
 
-namespace Ljm\Tools;
+namespace ajing\tools;
 
 class Env
 {
