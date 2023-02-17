@@ -1,11 +1,11 @@
 {
-    "name": "jim/tools",
+    "name": "laijingming/tools",
     "description": "获取.env配置文件的环境变量",
     "license": "MIT",
     "type": "library",
     "autoload": {
         "psr-4": {
-            "jim\\tools\\": "src/"
+            "laijingming\\tools\\": "src/"
         }
     },
     "authors": [
