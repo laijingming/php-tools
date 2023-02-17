@@ -1,0 +1,18 @@
+{
+    "name": "jim/tools",
+    "description": "获取.env配置文件的环境变量",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "jim\\tools\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "laijingming",
+            "email": "ljingming473@gmail.com"
+        }
+    ],
+    "require": {}
+}
