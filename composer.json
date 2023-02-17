@@ -16,7 +16,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "laijingming/tools": "dev-master"
+
     },
     "version": "1.0.0"
 }
