@@ -1,6 +1,7 @@
 {
     "name": "laijingming/tools",
     "description": "获取.env配置文件的环境变量",
+    "license": "MIT",
     "type": "library",
     "autoload": {
         "psr-4": {
@@ -12,5 +13,9 @@
             "name": "laijingming",
             "email": "ljingming473@gmail.com"
         }
-    ]
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.6"
+    }
 }
