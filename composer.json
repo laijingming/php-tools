@@ -16,7 +16,5 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.6",
-        "laijingming/tools": "^1.0"
     }
 }
