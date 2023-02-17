@@ -1,19 +1,20 @@
 {
-    "name": "ljm/tools",
+    "name": "laijingming/tools",
     "description": "获取.env配置文件的环境变量",
-    "type": "library",
+    "type": "1",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Ljm\\Tools\\": "src/"
+            "JimTools\\": "src/"
         }
     },
     "authors": [
         {
-            "name": "jim",
-            "email": "617555124@qq.com"
+            "name": "laijingming",
+            "email": "ljingming473@gmail.com"
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {},
+    "version": "1.0.2"
 }
