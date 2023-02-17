@@ -5,7 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "laijingming\\tools\\": "src/"
+            "JimTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JimTools\\": "src/"
         }
     },
     "authors": [
@@ -14,9 +19,7 @@
             "email": "ljingming473@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-
-    },
-    "version": "1.0.0"
+        "php": ">=5.6.0"
+    }
 }

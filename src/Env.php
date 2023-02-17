@@ -6,7 +6,7 @@
  * Time: 15:29
  */
 
-namespace laijingming\tools;
+namespace JimTools;
 
 class Env
 {
