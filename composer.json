@@ -5,11 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "ajing\\tools\\": "src/Env.php"
+            "ajing\\tools\\": "src/"
         }
-    },
-    "config": {
-        "vendor-dir": "/ajing/tools"
     },
     "authors": [
         {
