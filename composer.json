@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "ajing\\": "tools/"
+            "ajing\\": "tools\\Env.php",
+            "ajing\\": "tools\\Route.php"
         }
     },
     "authors": [
