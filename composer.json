@@ -5,9 +5,11 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "ajing\\env\\": "env/",
-            "ajing\\route\\": "route/"
+            "ajing\\tools\\": "src/"
         }
+    },
+    "config": {
+        "vendor-dir": "/ajing/tools"
     },
     "authors": [
         {
