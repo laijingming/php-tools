@@ -5,6 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
+            "ajing\\support\\": "support/",
             "ajing\\route\\": "route/",
             "ajing\\tools\\": "src/"
         }
