@@ -6,19 +6,34 @@
  * Time: 14:03
  */
 
-namespace ajing\route;
+namespace ajing\tools;
+
+use lib\Ioc;
+use lib\Pipeline;
+use lib\Request;
 
 /**
- * @method static Route get(string $route, Callable $callback)
- * @method static Route post(string $route, Callable $callback)
- * @method static Route put(string $route, Callable $callback)
- * @method static Route delete(string $route, Callable $callback)
- * @method static Route options(string $route, Callable $callback)
- * @method static Route head(string $route, Callable $callback)
+ * @method static RouteRegister get(string $route, Callable $callback)
+ * @method static RouteRegister post(string $route, Callable $callback)
+ * @method static RouteRegister put(string $route, Callable $callback)
+ * @method static RouteRegister delete(string $route, Callable $callback)
+ * @method static RouteRegister options(string $route, Callable $callback)
+ * @method static RouteRegister head(string $route, Callable $callback)
+ * @method static RouteRegister group(array|\Closure|string $attributes, \Closure|string $routes)
+ * @method RouteRegister getPathList()
+ * @method RouteRegister getNameList()
+ * @method Route as(string $value)
+ * @method Route domain(string $value)
+ * @method Route middleware(array|string|null $middleware)
+ * @method Route middlewareGroups(array $middleware)
+ * @method Route routeMiddleware(array $routeMiddleware)
+ * @method RouteRegister name(string $value)
+ * @method Route namespace(string $value)
+ * @method Route prefix(string $prefix)
+ * @method Route where(array $where)
  */
 class Route
 {
-    public static $namespace = '';
     public static $routes = array();//存储注册的路由
     public static $patterns = array(
         ':any' => '[^/]+',
@@ -28,39 +43,150 @@ class Route
     public static $matchRoutes = array();
 
     /**
-     * 注册路由
-     * @param $method string 路由类型
+     * 他将属性传递给路由器
+     * @var array
+     */
+    protected $attributes = [];
+    /**
+     * 可以通过这个类设置的属性
+     * @var array
+     */
+    protected $allowedAttributes = [
+        'as', 'domain', 'middleware', 'namespace', 'prefix', 'where', 'middlewareGroups', 'routeMiddleware'
+    ];
+
+    /**
+     * 动态传递给路由器的方法
+     * @var array
+     */
+    protected $passthru = [
+        'get', 'post', 'put', 'patch', 'delete', 'options', 'any'
+    ];
+
+
+    /**
+     * @param $method
      * @param $arguments
      */
     public static function __callStatic($method, $arguments)
     {
-        self::$routes['/' . ltrim($arguments[0], '/')] = [
-            //允许请求的方法=>匿名函数或者要执行的控制器方法
-            strtoupper($method) => $arguments[1],
-        ];
+        return self::getRouteRegister()->$method(...$arguments);
+    }
+
+    /**
+     * @param $method
+     * @param $parameters
+     */
+    public function __call($method, $parameters)
+    {
+        if (in_array($method, $this->passthru)) {
+            return self::getRouteRegister()->$method(...$parameters);
+        }
+
+        if (in_array($method, $this->allowedAttributes)) {
+            if ($method == 'middleware') {
+                return $this->attribute($method, is_array($parameters[0]) ? $parameters[0] : $parameters);
+            }
+
+            return $this->attribute($method, $parameters[0]);
+        }
+
+        throw new \Exception(sprintf(
+            'Method %s::%s does not exist.', static::class, $method
+        ));
+    }
+
+    /**
+     * 创建具有共享属性的路由组。
+     * @param $callback
+     * @return $this
+     */
+    public function groupFirst($callback)
+    {
+        $middleware = $this->getAttribute('middleware', []);
+        $middlewareGroups = $this->getAttribute('middlewareGroups', []);
+        $pipeline = new Pipeline();
+        if (!empty($middleware) && isset($middlewareGroups[$middleware[0]])) {
+            $pipeline->through($middlewareGroups[$middleware[0]]);
+        }
+        $pipeline->then(function () use ($callback) {
+            self::getRouteRegister()->group($this->attributes, $callback);
+        });
+        return $this;
+    }
+
+
+    /**
+     * 设置给定属性的值
+     * @param  string $key
+     * @param  mixed $value
+     * @return $this
+     *
+     * @throws \Exception
+     */
+    public function attribute($key, $value)
+    {
+        if (!in_array($key, $this->allowedAttributes)) {
+            throw new \Exception("Attribute [{$key}] does not exist.");
+        }
+
+        $this->attributes[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * 获取属性
+     * @param $key
+     * @param $default
+     * @return mixed
+     */
+    public function getAttribute($key, $default = '')
+    {
+        if (!isset($this->attributes[$key])) {
+            return $default;
+        }
+        return $this->attributes[$key];
     }
 
     /**
      * 启动路由
      */
-    public function run()
+    public function run(Request $request)
     {
-//        print_r(self::$routes);
-        self::$matchRoutes = array();
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $method = $_SERVER['REQUEST_METHOD'];
-        $this->matchWithoutRegex($uri, $method);
-        if (!isset(self::$matchRoutes[0])) {
-            $this->matchRegex($uri, $method);
-        }
-        if (!isset(self::$matchRoutes[0])) {
-            header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
+        $uri = $request->path();
+        $method = $request->getMethod();
+        $routes = self::getRouteRegister()->getPathList();
+        $matchRoutes = array();
+        if ((!$this->matchWithoutRegex($uri, $method, $routes, $matchRoutes) &&
+                !$this->matchRegex($uri, $method, $routes, $matchRoutes)) ||
+            empty($matchRoutes)) {
+
+            header($request->server->get('SERVER_PROTOCOL') . " 404 Not Found");
             echo '404';
             return;
         }
-        if (!$this->callObject(self::$matchRoutes[1], self::$matchRoutes[2])) {
-            $this->callControllerMethod(self::$matchRoutes[1], self::$matchRoutes[2]);
+        $pipeline = new Pipeline();
+        $routeMiddleware = $this->getAttribute('routeMiddleware', []);
+        if (!empty($routeMiddleware) && isset($matchRoutes['middleware'])) {
+            array_pop($matchRoutes['middleware']);
+            $pipeline->through($this->getRouteMiddleware($matchRoutes['middleware'], $routeMiddleware));
         }
+        $pipeline->then(function () use ($matchRoutes) {
+            if (!$this->callObject($matchRoutes['action'], $matchRoutes['query'])) {
+                $this->callControllerMethod($matchRoutes['action'], $matchRoutes['query']);
+            }
+        });
+    }
+
+    protected function getRouteMiddleware(array $middleware, array $routeMiddleware)
+    {
+        $middlewareArr = [];
+        foreach ($middleware as $name) {
+            if (isset($routeMiddleware[$name])) {
+                array_unshift($middlewareArr, $routeMiddleware[$name]);
+            }
+        }
+        return $middlewareArr;
     }
 
     /**
@@ -73,7 +199,6 @@ class Route
         // 抓取控制器名称和方法调用
         $segments = explode('@', $callback);
         $controllerName = $segments[0];
-        $controllerName = self::$namespace . str_replace('/', '\\', $controllerName);
         $methodName = isset($segments[1]) ? $segments[1] : 'index';
         $controller = new $controllerName();
         // 修复多参数
@@ -103,47 +228,51 @@ class Route
      * 非正则路由匹配
      * @param $uri
      * @param $method
+     * @param $routes
+     * @param $matchRoutes
+     * @return bool
      */
-    public function matchWithoutRegex($uri, $method)
+    public function matchWithoutRegex($uri, $method, $routes, &$matchRoutes)
     {
-        $route = self::$routes[$uri];
+        $route = $routes[$uri] ?? [];
         //未找到注册uri或者未匹配到对应方法路由配置
         if ($route && $callback = $this->methodToCallBack($route, $method)) {
-            self::$matchRoutes = [
-                $route,
-                $callback,
-                []
-            ];
+            $callback['query'] = [];
+            $matchRoutes = $callback;
+            return true;
         }
+        return false;
     }
 
     /**
      * 正则路由匹配
      * @param $uri
      * @param $method
+     * @param $routes
+     * @param $matchRoutes
+     * @return bool
      */
-    public function matchRegex($uri, $method)
+    public function matchRegex($uri, $method, $routes, &$matchRoutes)
     {
         $searches = array_keys(static::$patterns);
         $replaces = array_values(static::$patterns);
-        foreach (self::$routes as $route => $methodCallBack) {
-            if (strpos($route, ':') !== false) {
-                $route = str_replace($searches, $replaces, $route);
+        foreach ($routes as $registerUri => $methodCallBack) {
+            if (strpos($registerUri, ':') !== false) {
+                $registerUri = str_replace($searches, $replaces, $registerUri);
             }
-            if (preg_match('#^' . $route . '$#', $uri, $matched)) {
+            if (preg_match('#^' . $registerUri . '$#', $uri, $matched)) {
                 if (!$callback = $this->methodToCallBack($methodCallBack, $method)) {
                     continue;
                 }
+                print_r($callback);
                 //移出开头数组
                 array_shift($matched);
-                self::$matchRoutes = [
-                    $route,
-                    $callback,
-                    $matched
-                ];
-                break;
+                $callback['query'] = $matched;
+                $matchRoutes = $callback;
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -160,21 +289,12 @@ class Route
         return !$callback && isset($methodCallBack['ANY']) ? $methodCallBack['ANY'] : $callback;
     }
 
-    public static function load($file)
-    {
-        $router = new static;
-        require $file;
-        // 注意这里，静态方法中没有 $this 变量，不能 return $this;
-        return $router;
-    }
-
     /**
-     * @param $namespace
-     * @return $this
+     * 返回RouteRegister实例
+     * @return RouteRegister
      */
-    public function namespace($namespace)
+    public static function getRouteRegister()
     {
-        self::$namespace = $namespace;
-        return $this;
+        return RouteRegister::getInstance();
     }
 }
