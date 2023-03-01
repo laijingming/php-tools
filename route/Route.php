@@ -6,11 +6,7 @@
  * Time: 14:03
  */
 
-namespace ajing\tools;
-
-use lib\Ioc;
-use lib\Pipeline;
-use lib\Request;
+namespace ajing\route;
 
 /**
  * @method static RouteRegister get(string $route, Callable $callback)
