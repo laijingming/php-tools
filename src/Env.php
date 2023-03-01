@@ -6,7 +6,7 @@
  * Time: 15:29
  */
 
-namespace ajing;
+namespace ajing\tools;
 
 class Env
 {
