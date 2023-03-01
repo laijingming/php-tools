@@ -6,7 +6,7 @@
  * Time: 14:03
  */
 
-namespace ajing\tools;
+namespace ajing\route;
 
 /**
  * @method static Route get(string $route, Callable $callback)
