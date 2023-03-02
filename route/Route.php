@@ -19,6 +19,14 @@ namespace ajing\route;
  * @method RouteRegister getPathList()
  * @method RouteRegister getNameList()
  * @method RouteRegister name(string $value)
+ * @method Route as(string $value)
+ * @method Route domain(string $value)
+ * @method Route middleware(array|string|null $middleware)
+ * @method Route middlewareGroups(array $middleware)
+ * @method Route routeMiddleware(array $routeMiddleware)
+ * @method Route namespace(string $value)
+ * @method Route prefix(string $prefix)
+ * @method Route where(array $where)
  * @see RouteRegister
  */
 class Route
