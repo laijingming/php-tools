@@ -9,24 +9,17 @@
 namespace ajing\route;
 
 /**
- * @method static RouteRegister get(string $route, Callable $callback)
- * @method static RouteRegister post(string $route, Callable $callback)
- * @method static RouteRegister put(string $route, Callable $callback)
- * @method static RouteRegister delete(string $route, Callable $callback)
- * @method static RouteRegister options(string $route, Callable $callback)
- * @method static RouteRegister head(string $route, Callable $callback)
- * @method static RouteRegister group(array|\Closure|string $attributes, \Closure|string $routes)
+ * @method RouteRegister get(string $route, Callable $callback)
+ * @method RouteRegister post(string $route, Callable $callback)
+ * @method RouteRegister put(string $route, Callable $callback)
+ * @method RouteRegister delete(string $route, Callable $callback)
+ * @method RouteRegister options(string $route, Callable $callback)
+ * @method RouteRegister head(string $route, Callable $callback)
+ * @method RouteRegister group(array|\Closure|string $attributes, \Closure|string $routes)
  * @method RouteRegister getPathList()
  * @method RouteRegister getNameList()
- * @method Route as(string $value)
- * @method Route domain(string $value)
- * @method Route middleware(array|string|null $middleware)
- * @method Route middlewareGroups(array $middleware)
- * @method Route routeMiddleware(array $routeMiddleware)
  * @method RouteRegister name(string $value)
- * @method Route namespace(string $value)
- * @method Route prefix(string $prefix)
- * @method Route where(array $where)
+ * @see RouteRegister
  */
 class Route
 {
@@ -56,18 +49,18 @@ class Route
      * @var array
      */
     protected $passthru = [
-        'get', 'post', 'put', 'patch', 'delete', 'options', 'any'
+        'get', 'post', 'put', 'patch', 'delete', 'options', 'any','group'
     ];
 
 
-    /**
-     * @param $method
-     * @param $arguments
-     */
-    public static function __callStatic($method, $arguments)
-    {
-        return self::getRouteRegister()->$method(...$arguments);
-    }
+//    /**
+//     * @param $method
+//     * @param $arguments
+//     */
+//    public static function __callStatic($method, $arguments)
+//    {
+//        return self::getRouteRegister()->$method(...$arguments);
+//    }
 
     /**
      * @param $method
