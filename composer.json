@@ -15,5 +15,10 @@
             "name": "ajing",
             "email": "617555124@qq.com"
         }
-    ]
+    ],
+    "require": {
+        "illuminate/database": "^6.19",
+        "illuminate/validation": "^6.19",
+        "illuminate/http": "^6.19"
+    }
 }

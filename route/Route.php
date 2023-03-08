@@ -148,9 +148,9 @@ class Route
     /**
      * 启动路由
      */
-    public function run(Request $request)
+    public function run(\Illuminate\Http\Request $request)
     {
-        $uri = $request->path();
+        $uri = $request->getPathInfo();
         $method = $request->getMethod();
         $routes = self::getRouteRegister()->getPathList();
         $matchRoutes = array();
