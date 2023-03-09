@@ -173,11 +173,12 @@ class RouteRegister
     /**
      * 根据uri匹配路由
      * @param $uri
-     * @return array|mixed
+     * @param $method
+     * @return array
      */
-    public function getUriToRoute($uri)
+    public function getUriMethodToRoute($uri, $method)
     {
-        return $this->pathList[$uri] ?? [];
+        return $this->pathList[$uri][$method] ?? [];
     }
 
     /**

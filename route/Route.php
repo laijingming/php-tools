@@ -173,9 +173,10 @@ class Route
      */
     public function runByName($name, $param = [])
     {
-        $matchRoutes = self::getRouteRegister()->getNameList($name);
-        $matchRoutes['query'] = $param;
-        $this->doRoute($matchRoutes);
+        $nameMatchRoute = self::getRouteRegister()->getNameList($name);
+        $matchRoute = self::getRouteRegister()->getUriMethodToRoute($nameMatchRoute['uri'], $nameMatchRoute['method']);
+        $matchRoute['query'] = $param;
+        $this->doRoute($matchRoute);
     }
 
     /**
