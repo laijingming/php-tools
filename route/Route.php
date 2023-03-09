@@ -171,7 +171,7 @@ class Route
      * @param $name
      * @param $param
      */
-    public function runByName($name, $param)
+    public function runByName($name, $param = [])
     {
         $matchRoutes = self::getRouteRegister()->getNameList($name);
         $matchRoutes['query'] = $param;
