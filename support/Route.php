@@ -18,6 +18,7 @@ namespace ajing\support;
  * @method static \ajing\route\Route name(string $value)
  * @method static \ajing\route\Route namespace(string $value)
  * @method static \ajing\route\Route group(array|\Closure|string $attributes, \Closure|string $routes)
+ * @method static \ajing\route\Route runByName(string $name, array $param = [])
  * @see \ajing\route\Route
  */
 class Route extends Facade
