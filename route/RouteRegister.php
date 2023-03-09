@@ -182,10 +182,14 @@ class RouteRegister
 
     /**
      * 输出所有注册路由
-     * @return array
+     * @param string $name
+     * @return array|mixed
      */
-    public function getNameList()
+    public function getNameList(string $name = '')
     {
+        if ($name) {
+            return $this->nameList[$name] ?? array();
+        }
         return $this->nameList;
     }
 

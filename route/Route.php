@@ -57,7 +57,7 @@ class Route
      * @var array
      */
     protected $passthru = [
-        'get', 'post', 'put', 'patch', 'delete', 'options', 'any','group'
+        'get', 'post', 'put', 'patch', 'delete', 'options', 'any', 'group'
     ];
 
 
@@ -153,7 +153,8 @@ class Route
         $uri = $request->getPathInfo();
         $method = $request->getMethod();
         $routes = self::getRouteRegister()->getPathList();
-        $matchRoutes = array();
+        self::$matchRoutes = array();
+        $matchRoutes =& self::$matchRoutes;
         if ((!$this->matchWithoutRegex($uri, $method, $routes, $matchRoutes) &&
                 !$this->matchRegex($uri, $method, $routes, $matchRoutes)) ||
             empty($matchRoutes)) {
@@ -162,6 +163,27 @@ class Route
             echo '404';
             return;
         }
+        $this->doRoute($matchRoutes);
+    }
+
+    /**
+     * 通过别名跑路由
+     * @param $name
+     * @param $param
+     */
+    public function runByName($name, $param)
+    {
+        $matchRoutes = self::getRouteRegister()->getNameList($name);
+        $matchRoutes['query'] = $param;
+        $this->doRoute($matchRoutes);
+    }
+
+    /**
+     * 执行路由
+     * @param $matchRoutes
+     */
+    protected function doRoute($matchRoutes)
+    {
         $pipeline = new Pipeline();
         $routeMiddleware = $this->getAttribute('routeMiddleware', []);
         if (!empty($routeMiddleware) && isset($matchRoutes['middleware'])) {
@@ -180,7 +202,8 @@ class Route
         $middlewareArr = [];
         foreach ($middleware as $name) {
             if (isset($routeMiddleware[$name])) {
-                array_unshift($middlewareArr, $routeMiddleware[$name]);
+                $middlewareArr[] = $routeMiddleware[$name];
+//                array_unshift($middlewareArr, $routeMiddleware[$name]);
             }
         }
         return $middlewareArr;
@@ -202,6 +225,8 @@ class Route
         if (!method_exists($controller, $methodName)) {
             echo "controller and action not found";
         } else {
+            self::$matchRoutes['funcName'] = $methodName;
+            self::$matchRoutes['className'] = end(explode('\\', $controllerName));
             call_user_func_array(array($controller, $methodName), $params);
         }
     }
