@@ -31,7 +31,6 @@ namespace ajing\route;
  */
 class Route
 {
-    public static $routes = array();//存储注册的路由
     public static $patterns = array(
         ':any' => '[^/]+',
         ':num' => '[0-9]+',
