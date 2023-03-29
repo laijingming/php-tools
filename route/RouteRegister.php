@@ -31,8 +31,7 @@ class RouteRegister
      */
     protected $nameList = [];
     /**
-     * The methods to dynamically pass through to the router.
-     *
+     * 动态传递给路由器的方法。
      * @var array
      */
     protected $passthru = [
@@ -51,13 +50,11 @@ class RouteRegister
     protected $lastRouteKeyMethod = [];
 
     /**
-     * Dynamically handle calls into the route registrar.
-     *
-     * @param  string $method
-     * @param  array $parameters
-     * @return \Illuminate\Routing\Route|$this
-     *
-     * @throws \BadMethodCallException
+     * 动态处理对路由注册器的调用。
+     * @param $method
+     * @param $parameters
+     * @return RouteRegister
+     * @throws \Exception
      */
     public function __call($method, $parameters)
     {
@@ -70,12 +67,11 @@ class RouteRegister
     }
 
     /**
-     * Register a new route with the router.
-     *
-     * @param  string $method
-     * @param  string $uri
-     * @param  \Closure|array|string|null $action
-     * @return \Illuminate\Routing\Route
+     * 向路由器注册一条新路由。
+     * @param $method
+     * @param $uri
+     * @param null $action
+     * @return $this
      */
     protected function registerRoute($method, $uri, $action = null)
     {
@@ -92,6 +88,19 @@ class RouteRegister
             'uri' => $uri,
         ];
         return $this;
+    }
+
+    /**
+     * 注册多类型
+     * @param $types
+     * @param $uri
+     * @param null $action
+     */
+    public function match($types, $uri, $action = null)
+    {
+        foreach ($types as $type) {
+            $this->$type($uri, $action);
+        }
     }
 
     /**
@@ -122,10 +131,9 @@ class RouteRegister
     }
 
     /**
-     * Format the namespace for the new group attributes.
-     *
-     * @param  array $new
-     * @param  array $old
+     * 格式化新组属性的命名空间。
+     * @param $new
+     * @param $old
      * @return string|null
      */
     protected static function formatNamespace($new, $old)
@@ -139,8 +147,7 @@ class RouteRegister
     }
 
     /**
-     * Format the prefix for the new group attributes.
-     *
+     * 格式化新组属性的前缀。
      * @param  array $new
      * @param  array $old
      * @return string|null
@@ -148,7 +155,6 @@ class RouteRegister
     protected static function formatPrefix($new, $old)
     {
         $old = $old['prefix'] ?? null;
-
         return isset($new['prefix']) ? trim($old, '/') . '/' . trim($new['prefix'], '/') : $old;
     }
 
@@ -194,6 +200,9 @@ class RouteRegister
         return $this->nameList;
     }
 
+    /**
+     * @return RouteRegister
+     */
     public static function getInstance()
     {
         static $instance;

@@ -56,7 +56,7 @@ class Route
      * @var array
      */
     protected $passthru = [
-        'get', 'post', 'put', 'patch', 'delete', 'options', 'any', 'group'
+        'get', 'post', 'put', 'delete', 'options', 'any', 'group','match'
     ];
 
 
