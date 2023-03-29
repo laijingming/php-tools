@@ -35,7 +35,7 @@ class RouteRegister
      * @var array
      */
     protected $passthru = [
-        'get', 'post', 'put', 'patch', 'delete', 'options', 'any',
+        'get', 'post', 'put', 'delete', 'options', 'any',
     ];
 
     /**
@@ -92,15 +92,17 @@ class RouteRegister
 
     /**
      * 注册多类型
-     * @param $types
+     * @param $methods
      * @param $uri
      * @param null $action
+     * @return mixed
      */
-    public function match($types, $uri, $action = null)
+    public function match($methods, $uri, $action = null)
     {
-        foreach ($types as $type) {
-            $this->$type($uri, $action);
+        foreach ($methods as $method) {
+            $this->registerRoute($method, $uri, $action);
         }
+        return $this;
     }
 
     /**
