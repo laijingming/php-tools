@@ -286,7 +286,6 @@ class Route
                 if (!$callback = $this->methodToCallBack($methodCallBack, $method)) {
                     continue;
                 }
-                print_r($callback);
                 //移出开头数组
                 array_shift($matched);
                 $callback['query'] = $matched;
