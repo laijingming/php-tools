@@ -61,9 +61,12 @@ class RouteRegister
         if (in_array($method, $this->passthru)) {
             return $this->registerRoute($method, ...$parameters);
         }
-        throw new \Exception(sprintf(
+        die(sprintf(
             'Method %s::%s does not exist.', static::class, $method
         ));
+//        throw new \Exception(sprintf(
+//            'Method %s::%s does not exist.', static::class, $method
+//        ));
     }
 
     /**
